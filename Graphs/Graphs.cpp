@@ -2,10 +2,10 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 #include <iostream>
-#include <iterator>
+#include <string>
 #include <vector>
-#include <list>
-#include <map>
+#include <unordered_map>
+#include <stack>
 
 extern "C" {
     int _sum(int, int);
@@ -15,52 +15,114 @@ extern "C" {
 }
 
 struct Edge;
+void cprint(std::string str);
 
-struct Vertex {
-    std::string name;
-    std::vector<Edge> edges;
-};
-
-struct Edge {
-    int len;
-    Vertex* from = nullptr;
-    Vertex* to = nullptr;
-};
-
-struct Graph {
-    std::vector<Vertex> vertexes;
-    std::vector<Edge> edges;
+struct Graph
+{
+    std::unordered_map<std::string, std::vector<std::pair<std::string, int>>> vertexes;
 
     void addVertex(std::string name) {
-        Vertex v = Vertex{ name };
-        vertexes.push_back(v);
-    }
-
-    Vertex getOrCreateVertex(std::string name) {
-        for (Vertex v : vertexes) {
-            if (v.name == name) return v;
+        if (vertexes.find(name) == vertexes.end())
+        {
+            vertexes[name] = std::vector<std::pair<std::string, int>>();
         }
-        _print("Not found, created new");
-        return Vertex{ name };
     }
 
+    void addEdge(std::string from, std::string to, int length) {
+        vertexes[from].push_back(std::make_pair(to, length));
+        vertexes[to].push_back(std::make_pair(from, length));
+    }
 
+    void printGraph() {
+        for (auto const &vertex : vertexes)
+        {
+            cprint(vertex.first + " ");
+            for (auto const& edge : vertex.second) {
+                cprint(" -> " + edge.first + " (" + std::to_string(edge.second) + ")");
+            }
+            cprint("\n");
+        }
+    }
 
+    std::vector<std::vector<std::string>> findAllPaths(std::string from, std::string to) {
+        std::vector<std::vector<std::string>> allPaths;
+        std::vector<std::string> currentPath = { from };
+        std::stack<std::pair<std::string, std::vector<std::string>>> stack;
+        stack.push({ from, currentPath });
+
+        while (!stack.empty())
+        {
+            std::string vertex = stack.top().first;
+            std::vector<std::string> path = stack.top().second;
+            stack.pop();
+
+            if (vertex == to) {
+                allPaths.push_back(path);
+            }
+            else
+            {
+                for (auto const& edge : vertexes[vertex]) {
+                    if (std::find(path.begin(), path.end(), edge.first) == path.end()) {
+                        std::vector<std::string> newPath = path;
+                        newPath.push_back(edge.first);
+                        stack.push({ edge.first, newPath });
+                    }
+                }
+            }
+        }
+        return allPaths;
+    }
+
+    void getAllPathLengths(std::string from, std::string to) {
+        std::vector<std::vector<std::string>> paths = findAllPaths(from, to);
+        std::vector<int> pathLengths;
+        for (auto const& path : paths) {
+            int pathLength = 0;
+            std::string pathName = "";
+            for (int i = 0; i < _sub(path.size(), 1); i++) {
+                pathName += path[i] + " -> ";
+                for (auto const& edge : vertexes[path[i]]) {
+                    if (edge.first == path[_sum(i, 1)]) {
+                        pathLength = _sum(pathLength, edge.second);
+                        break;
+                    }
+                }
+            }
+            pathName += to;
+            cprint(pathName + " (" + std::to_string(pathLength) + ")\n");
+            pathLengths.push_back(pathLength);
+        }
+    }
 };
 
 int main()
 {
-    Graph graph;
-    graph.addVertex("Moscow");
-    graph.addVertex("Piter");
+    Graph g;
+    g.addVertex("Moscow");
+    g.addVertex("St. Petersburg");
+    g.addVertex("Novosibirsk");
+    g.addVertex("Omsk");
+    g.addVertex("Tomsk");
+    g.addVertex("Tumen");
 
-    char* name1 = new char[graph.getOrCreateVertex("Moscow").name.length() + 1];
-    std::strcpy(name1, graph.getOrCreateVertex("Moscow").name.c_str());
-    _print(name1);
-    _print("\n");
-    char* name2 = new char[graph.getOrCreateVertex("Piter").name.length() + 1];
-    std::strcpy(name2, graph.getOrCreateVertex("Piter").name.c_str());
-    _print(name2);
+    g.addEdge("Moscow", "St. Petersburg", 500);
+    g.addEdge("St. Petersburg", "Novosibirsk", 1200);
+    g.addEdge("Moscow", "Novosibirsk", 1000);
+    g.addEdge("Novosibirsk", "Omsk", 250);
+    g.addEdge("Novosibirsk", "Tomsk", 400);
+    g.addEdge("Tomsk", "Omsk", 120);
+
+    g.printGraph();
+
+    g.getAllPathLengths("Moscow", "Omsk");
+    
 
     return 0;
+}
+
+void cprint(std::string str) {
+    char* chars = new char[str.length() + 1];
+    std::strcpy(chars, str.c_str());
+    _print(chars);
+    delete[] chars;
 }
