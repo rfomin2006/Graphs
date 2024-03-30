@@ -1,8 +1,8 @@
 option casemap:none
 includelib kernel32.lib
 
+extrn GetStdHandle: proc
 extrn WriteFile: proc
-extrn GetStdHandle:proc
 
 .code
 

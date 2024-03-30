@@ -14,9 +14,8 @@ extern "C" {
     void _print(const char*);
 }
 
-struct Edge;
+int menu();
 void cprint(std::string str);
-
 struct Graph
 {
     std::unordered_map<std::string, std::vector<std::pair<std::string, int>>> vertexes;
@@ -98,26 +97,66 @@ struct Graph
 int main()
 {
     Graph g;
-    g.addVertex("Moscow");
-    g.addVertex("St. Petersburg");
-    g.addVertex("Novosibirsk");
-    g.addVertex("Omsk");
-    g.addVertex("Tomsk");
-    g.addVertex("Tumen");
-
-    g.addEdge("Moscow", "St. Petersburg", 500);
-    g.addEdge("St. Petersburg", "Novosibirsk", 1200);
-    g.addEdge("Moscow", "Novosibirsk", 1000);
-    g.addEdge("Novosibirsk", "Omsk", 250);
-    g.addEdge("Novosibirsk", "Tomsk", 400);
-    g.addEdge("Tomsk", "Omsk", 120);
-
-    g.printGraph();
-
-    g.getAllPathLengths("Moscow", "Omsk");
-    
+    int choice;
+    std::string name;
+    std::string from;
+    std::string to;
+    int length;
+    menuLabel:
+        choice = menu();
+    switch (choice)
+    {
+    case 1:
+        cprint("\n");
+        g.printGraph();
+        cprint("\n");
+        goto menuLabel;
+        break;
+    case 2:
+        cprint("\nEnter vertex name: ");
+        std::cin >> name;
+        g.addVertex(name);
+        cprint("\n");
+        goto menuLabel;
+        break;
+    case 3:
+        cprint("\nEnter first vertex: ");
+        std::cin >> from;
+        cprint("\nEnter second vertex: ");
+        std::cin >> to;
+        cprint("\nEnter edge length: ");
+        std::cin >> length;
+        g.addEdge(from, to, length);
+        goto menuLabel;
+        break;
+    case 4:
+        cprint("\nEnter first vertex: ");
+        std::cin >> from;
+        cprint("\nEnter second vertex: ");
+        std::cin >> to;
+        cprint("\n");
+        g.getAllPathLengths(from, to);
+        cprint("\n");
+        goto menuLabel;
+        break;
+    case 5:
+        break;
+    }
 
     return 0;
+}
+
+int menu() {
+    int choice;
+    cprint("Menu:\n"
+           "  1.Print graph\n"
+           "  2.Add vertex\n"
+           "  3.Add edge\n"
+           "  4.Find all paths with lengths from A to B\n"
+           "  5.Exit\n\n"
+           "  Choice: ");
+    std::cin >> choice;
+    return choice;
 }
 
 void cprint(std::string str) {
