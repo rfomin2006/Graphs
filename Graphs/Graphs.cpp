@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <stack>
 
 extern "C" {
@@ -16,87 +15,97 @@ extern "C" {
 
 int menu();
 void cprint(std::string str);
-struct Graph
-{
-    std::unordered_map<std::string, std::vector<std::pair<std::string, int>>> vertexes;
+struct Edge {
+    std::string from;
+    std::string to;
+    int length;
+};
+struct Vertex {
+    std::string name;
+    std::vector<Edge> edges;
+};
+class Graph {
+public:
+    std::vector<Vertex> vertexes;
 
     void addVertex(std::string name) {
-        if (vertexes.find(name) == vertexes.end())
-        {
-            vertexes[name] = std::vector<std::pair<std::string, int>>();
-        }
+        vertexes.push_back({ name, {} });
     }
 
     void addEdge(std::string from, std::string to, int length) {
-        vertexes[from].push_back(std::make_pair(to, length));
-        vertexes[to].push_back(std::make_pair(from, length));
+        Vertex* v1 = findVertex(from);
+        Vertex* v2 = findVertex(to);
+        v1->edges.push_back({from, to, length});
+        v2->edges.push_back({to, from, length});
     }
 
     void printGraph() {
-        for (auto const &vertex : vertexes)
-        {
-            cprint(vertex.first + " ");
-            for (auto const& edge : vertex.second) {
-                cprint(" -> " + edge.first + " (" + std::to_string(edge.second) + ")");
+        for (Vertex& vertex : vertexes) {
+            cprint(vertex.name + ": ");
+            for (Edge& e : vertex.edges) {
+                cprint(e.to + " (" + std::to_string(e.length) + "), ");
             }
             cprint("\n");
         }
     }
 
-    std::vector<std::vector<std::string>> findAllPaths(std::string from, std::string to) {
-        std::vector<std::vector<std::string>> allPaths;
-        std::vector<std::string> currentPath = { from };
-        std::stack<std::pair<std::string, std::vector<std::string>>> stack;
-        stack.push({ from, currentPath });
-
-        while (!stack.empty())
-        {
-            std::string vertex = stack.top().first;
-            std::vector<std::string> path = stack.top().second;
-            stack.pop();
-
-            if (vertex == to) {
-                allPaths.push_back(path);
-            }
-            else
-            {
-                for (auto const& edge : vertexes[vertex]) {
-                    if (std::find(path.begin(), path.end(), edge.first) == path.end()) {
-                        std::vector<std::string> newPath = path;
-                        newPath.push_back(edge.first);
-                        stack.push({ edge.first, newPath });
-                    }
-                }
-            }
-        }
-        return allPaths;
+    void findAllPaths(std::string from, std::string to) {
+        std::vector<Edge> currentPath;
+        std::vector<bool> visited(vertexes.size(), false);
+        int currentLength = 0;
+        DFS(from, to, currentPath, currentLength, visited);
     }
 
-    void getAllPathLengths(std::string from, std::string to) {
-        std::vector<std::vector<std::string>> paths = findAllPaths(from, to);
-        std::vector<int> pathLengths;
-        for (auto const& path : paths) {
-            int pathLength = 0;
-            std::string pathName = "";
-            for (int i = 0; i < _sub(path.size(), 1); i++) {
-                pathName += path[i] + " -> ";
-                for (auto const& edge : vertexes[path[i]]) {
-                    if (edge.first == path[_sum(i, 1)]) {
-                        pathLength = _sum(pathLength, edge.second);
-                        break;
-                    }
-                }
-            }
-            pathName += to;
-            cprint(pathName + " (" + std::to_string(pathLength) + ")\n");
-            pathLengths.push_back(pathLength);
+private:
+    Vertex* findVertex(std::string name) {
+        for (auto &v : vertexes) {
+            if (v.name == name) return &v;
         }
+        return nullptr;
+    }
+    
+    void DFS(std::string current, std::string target, std::vector<Edge>& currentPath, int currentLength, std::vector<bool>& visited) {
+        visited[getIndex(current)] = true;
+        currentPath.push_back({ current, current, 0 });
+
+        if (current == target) {
+            printPath(currentPath, currentLength);
+        }
+
+        for (Edge& edge : findVertex(current)->edges) {
+            if (!visited[getIndex(edge.to)]) {
+                currentLength += edge.length;
+                DFS(edge.to, target, currentPath, currentLength, visited);
+                currentLength -= edge.length;
+            }
+        }
+
+        visited[getIndex(current)] = false;
+        currentPath.pop_back();
+    }
+
+    int getIndex(std::string name) {
+        for (size_t i = 0; i < vertexes.size(); i++) {
+            if (vertexes[i].name == name) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    void printPath(std::vector<Edge>& path, int length) {
+        std::cout << "Path: ";
+        for (Edge& edge : path) {
+            cprint(edge.from + " -> ");
+        }
+        cprint("Length: " + std::to_string(length) + "\n");
     }
 };
 
 int main()
 {
-    Graph g;
+    std::vector<std::pair<std::vector<Edge>, int>> paths;
+    Graph g = Graph();
     int choice;
     std::string name;
     std::string from;
@@ -107,19 +116,24 @@ int main()
     switch (choice)
     {
     case 1:
+    {
         cprint("\n");
         g.printGraph();
         cprint("\n");
         goto menuLabel;
         break;
+    }
     case 2:
+    {
         cprint("\nEnter vertex name: ");
         std::cin >> name;
         g.addVertex(name);
         cprint("\n");
         goto menuLabel;
         break;
+    }
     case 3:
+    {
         cprint("\nEnter first vertex: ");
         std::cin >> from;
         cprint("\nEnter second vertex: ");
@@ -129,18 +143,23 @@ int main()
         g.addEdge(from, to, length);
         goto menuLabel;
         break;
+    }
     case 4:
+    {
         cprint("\nEnter first vertex: ");
         std::cin >> from;
         cprint("\nEnter second vertex: ");
         std::cin >> to;
         cprint("\n");
-        g.getAllPathLengths(from, to);
+        g.findAllPaths(from, to);
         cprint("\n");
         goto menuLabel;
         break;
+    }
     case 5:
+    {
         break;
+    }
     }
 
     return 0;
