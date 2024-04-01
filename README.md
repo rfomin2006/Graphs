@@ -11,3 +11,9 @@
 
 <h2>Контрольный пример</h2>
 <br>
+| Изображение графа | Результаты поиска путей |
+| ------------- | ------------- |
+| ![PrintGraph 1](https://github.com/rfomin2006/Graphs/assets/146825482/e70ccc8f-2fe6-400d-b67a-8f7c733ffc67) | ![FindPaths 1](https://github.com/rfomin2006/Graphs/assets/146825482/cb77aaec-1d28-463c-83f2-9608e8e835f9) |
+| ------------- | ------------- |
+|Циклы|
+|![1 1](https://github.com/rfomin2006/Graphs/assets/146825482/6c946a33-8087-4dfc-850c-945436ed01b5)|
