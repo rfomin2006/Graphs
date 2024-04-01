@@ -25,6 +25,9 @@
 <h2>Текст программы</h2>
 <br>
 
-| ![1](https://github.com/rfomin2006/Graphs/assets/146825482/88f79632-35c6-45a1-b46e-6af444bd6d2b) | ![2](https://github.com/rfomin2006/Graphs/assets/146825482/99ada40e-f815-4e74-b5c7-708fcdbf192a) |
-| ![3](https://github.com/rfomin2006/Graphs/assets/146825482/8f2fa043-4823-4315-9d1c-2814de90490b) | ![4](https://github.com/rfomin2006/Graphs/assets/146825482/dd260dc4-b04f-493b-be73-64c4c760f61d) |
-| ![5](https://github.com/rfomin2006/Graphs/assets/146825482/4ff73149-6278-488c-8115-e70885e4be2a) | ![ASM](https://github.com/rfomin2006/Graphs/assets/146825482/c98ca757-63cd-438e-b595-60fc0eb307c1) |
+![1](https://github.com/rfomin2006/Graphs/assets/146825482/88f79632-35c6-45a1-b46e-6af444bd6d2b) 
+![2](https://github.com/rfomin2006/Graphs/assets/146825482/99ada40e-f815-4e74-b5c7-708fcdbf192a) 
+![3](https://github.com/rfomin2006/Graphs/assets/146825482/8f2fa043-4823-4315-9d1c-2814de90490b) 
+![4](https://github.com/rfomin2006/Graphs/assets/146825482/dd260dc4-b04f-493b-be73-64c4c760f61d) 
+![5](https://github.com/rfomin2006/Graphs/assets/146825482/4ff73149-6278-488c-8115-e70885e4be2a) 
+![ASM](https://github.com/rfomin2006/Graphs/assets/146825482/c98ca757-63cd-438e-b595-60fc0eb307c1) 
